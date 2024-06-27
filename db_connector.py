@@ -21,15 +21,6 @@ class DBConnector:
         rows = cursor.fetchall()
         return [City(city_id=row[0], name=row[1], lat=row[2], lon=row[3]) for row in rows]
 
-    def get_city_by_coords(self, lat: float, lon: float) -> Optional[City]:
-        cursor = self.conn.cursor()
-        cursor.execute('SELECT city_id, name, lat, lon FROM City WHERE lat=? AND lon=?', (lat, lon))
-        row = cursor.fetchone()
-        if row:
-            return City(city_id=row[0], name=row[1], lat=row[2], lon=row[3])
-        else:
-            return None
-
     def get_metric_id(self, metric_name: str) -> Optional[int]:
         cursor = self.conn.cursor()
         cursor.execute('SELECT metric_id FROM AirMetric WHERE name=?', (metric_name,))
@@ -42,19 +33,12 @@ class DBConnector:
     def insert_measurement(self, city_id: int, metric_id: int, value: float, timestamp: int):
         cursor = self.conn.cursor()
         cursor.execute(
-            'INSERT INTO Measurement (city_id, metric_id, value, timestamp) VALUES (?, ?, ?, ?)',
+            'INSERT OR IGNORE INTO Measurement (city_id, metric_id, value, timestamp) VALUES (?, ?, ?, ?)',
             (city_id, metric_id, value, timestamp)
         )
         self.conn.commit()
 
-    def insert_data_from_json(self, json_data: Dict):
-        lat = json_data["coord"]["lat"]
-        lon = json_data["coord"]["lon"]
-
-        city = self.get_city_by_coords(lat, lon)
-        if city is None:
-            print(f"No city found with coordinates ({lat}, {lon})")
-            return
+    def insert_data_from_json(self,city: City, json_data: Dict):
 
         measurement = json_data["list"][0]
         timestamp = measurement["dt"]
@@ -63,6 +47,6 @@ class DBConnector:
         for metric_name, value in components.items():
             metric_id = self.get_metric_id(metric_name)
             if metric_id is not None:
-                self.insert_measurement(city.id, metric_id, value, timestamp)
+                self.insert_measurement(city.city_id, metric_id, value, timestamp)
             else:
                 print(f"No metric found with name {metric_name}")

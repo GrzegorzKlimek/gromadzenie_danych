@@ -12,4 +12,4 @@ def get_air_pollution_data(city: City):
     if response.status_code == 200:
         return response.json()
     else:
-        return {"error": f"Failed to retrieve data: {response.status_code}"}
+        return None

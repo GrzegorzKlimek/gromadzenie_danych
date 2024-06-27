@@ -1,6 +1,6 @@
 class City:
     def __init__(self, city_id, name: str, lat: float, lon: float):
-        self.city = city_id
+        self.city_id = city_id
         self.name = name
         self.lat = lat
         self.lon = lon
