@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS Measurement (
     metric_id INTEGER,
     value REAL NOT NULL,
     timestamp INTEGER NOT NULL,
+    UNIQUE (metric_id, city_id, timestamp),
     FOREIGN KEY (city_id) REFERENCES City(city_id),
     FOREIGN KEY (metric_id) REFERENCES AirMetric(metric_id)
 );
