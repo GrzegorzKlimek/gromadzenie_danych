@@ -53,7 +53,10 @@ def main():
             plot_data(db_connector, output_dir=OUTDIR)
             print(f"Checking if any air quality standarts are exceeded")
             exceeded_standarts = check_air_quality_standards(db_connector) 
-            print(exceeded_standarts)
+            if len(exceeded_standarts) == 0:
+                print("Air quality standards are maintained")
+            for city_name, metric_name, value, acceptable_level in exceeded_standarts:
+                print(f"{metric_name.upper} in {city_name} is above acceptable level. Norm is {acceptable_level} and value is {value}")
             first_run = False
         except:
             traceback.print_exc()
