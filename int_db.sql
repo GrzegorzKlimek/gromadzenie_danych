@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS AirMetric (
     name TEXT NOT NULL
 );
 
+
 CREATE TABLE IF NOT EXISTS Measurement (
     measurement_id INTEGER PRIMARY KEY AUTOINCREMENT,
     city_id INTEGER,

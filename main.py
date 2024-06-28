@@ -10,6 +10,7 @@ from charts import plot_data
 
 DB_PATH="air_quality.db"
 REFRESH_INTERVAL_SEC = 60
+OUTDIR="charts"
 
 
 def refresh_air_data(db_connector: DBConnector):
@@ -35,7 +36,8 @@ def main():
         try:
             print("Refreshing air data of cities")
             refresh_air_data(db_connector)
-            plot_data(db_connector)
+            print(f"Generating charts for each city pollution")
+            plot_data(db_connector, output_dir=OUTDIR)
             first_run = False
         except:
             traceback.print_exc()
