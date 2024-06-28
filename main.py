@@ -3,10 +3,11 @@ import traceback
 from typing import List, Tuple
 
 from tqdm import tqdm
+from charts import plot_data
 from db_connector import DBConnector
 from weather_api import get_air_pollution_data 
 import sys
-from charts import plot_data
+from email_service import send_email
 
 
 DB_PATH="air_quality.db"
@@ -38,6 +39,13 @@ def refresh_air_data(db_connector: DBConnector):
         else:
             print(f"failed to get data for {city.name}", file=sys.stderr)
 
+def notify_about_air_polution(exceeded_standarts: List[Tuple[str, str, float, float]]) -> None:
+    notify_message = ""
+    for city_name, metric_name, value, acceptable_level in exceeded_standarts:
+        notify_message += (f"{metric_name.upper()} in {city_name} is above acceptable level. Norm is {acceptable_level} and value is {value} \n")
+    print(notify_message)
+    send_email("patrycja.malesa@gmail.com", "Air pollution alert", notify_message)
+
 
 def main():
     db_connector = DBConnector(DB_PATH)
@@ -55,8 +63,8 @@ def main():
             exceeded_standarts = check_air_quality_standards(db_connector) 
             if len(exceeded_standarts) == 0:
                 print("Air quality standards are maintained")
-            for city_name, metric_name, value, acceptable_level in exceeded_standarts:
-                print(f"{metric_name.upper} in {city_name} is above acceptable level. Norm is {acceptable_level} and value is {value}")
+            else:
+                notify_about_air_polution(exceeded_standarts)
             first_run = False
         except:
             traceback.print_exc()
