@@ -50,6 +50,31 @@ class DBConnector:
             (city_id, metric_id, value, timestamp)
         )
         self.conn.commit()
+    
+
+    def get_latest_measurements(self) -> List[Tuple[str, str, float, float]]:
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            SELECT 
+                c.name, 
+                m.name, 
+                me.timestamp, 
+                me.value, 
+                s.acceptable_level 
+            FROM Measurement me
+            JOIN City c ON me.city_id = c.city_id
+            JOIN AirMetric m ON me.metric_id = m.metric_id
+            JOIN AirQualityStandards s ON me.metric_id = s.metric_id
+            WHERE me.timestamp = (
+                SELECT max(sub_me.timestamp)
+                FROM Measurement sub_me
+                WHERE sub_me.city_id = me.city_id
+                AND sub_me.metric_id = me.metric_id
+            )
+            ORDER BY c.name, m.name
+        ''')
+        return cursor.fetchall()
+
 
     def insert_data_from_json(self,city: City, json_data: Dict):
 

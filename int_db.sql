@@ -23,7 +23,32 @@ CREATE TABLE IF NOT EXISTS Measurement (
 );
 
 
--- Insert cities into the City table
+CREATE TABLE IF NOT EXISTS AirQualityStandards (
+    metric_id INTEGER,
+    acceptable_level INTEGER NOT NULL,
+    FOREIGN KEY (metric_id) REFERENCES AirMetric(metric_id)
+);
+
+INSERT INTO AirMetric (name) VALUES ('co');
+INSERT INTO AirMetric (name) VALUES ('no');
+INSERT INTO AirMetric (name) VALUES ('no2');
+INSERT INTO AirMetric (name) VALUES ('o3');
+INSERT INTO AirMetric (name) VALUES ('so2');
+INSERT INTO AirMetric (name) VALUES ('pm2_5');
+INSERT INTO AirMetric (name) VALUES ('pm10');
+INSERT INTO AirMetric (name) VALUES ('nh3');
+
+INSERT INTO AirQualityStandards (metric_id, acceptable_level) VALUES
+    ((SELECT metric_id FROM AirMetric WHERE name='co'), 10000),
+    ((SELECT metric_id FROM AirMetric WHERE name='nh3'), 200),
+    ((SELECT metric_id FROM AirMetric WHERE name='no'), 200),
+    ((SELECT metric_id FROM AirMetric WHERE name='no2'), 60),
+    ((SELECT metric_id FROM AirMetric WHERE name='o3'), 65),
+    ((SELECT metric_id FROM AirMetric WHERE name='pm2_5'), 25),
+    ((SELECT metric_id FROM AirMetric WHERE name='pm10'), 50),
+    ((SELECT metric_id FROM AirMetric WHERE name='so2'), 75);
+
+
 INSERT INTO City (name, lat, lon) VALUES ('Wroclaw', 51.107883, 17.038538);
 INSERT INTO City (name, lat, lon) VALUES ('Kraków', 50.049683, 19.944544);
 INSERT INTO City (name, lat, lon) VALUES ('Warszawa', 52.237049, 21.017532);
@@ -40,12 +65,3 @@ INSERT INTO City (name, lat, lon) VALUES ('Kielce', 50.866077, 20.628569);
 INSERT INTO City (name, lat, lon) VALUES ('Olsztyn', 53.770226, 20.490189);
 INSERT INTO City (name, lat, lon) VALUES ('Opole', 50.671062, 17.926126);
 
--- Insert air metrics into the AirMetric table
-INSERT INTO AirMetric (name) VALUES ('co');
-INSERT INTO AirMetric (name) VALUES ('no');
-INSERT INTO AirMetric (name) VALUES ('no2');
-INSERT INTO AirMetric (name) VALUES ('o3');
-INSERT INTO AirMetric (name) VALUES ('so2');
-INSERT INTO AirMetric (name) VALUES ('pm2_5');
-INSERT INTO AirMetric (name) VALUES ('pm10');
-INSERT INTO AirMetric (name) VALUES ('nh3');
