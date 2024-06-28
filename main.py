@@ -5,6 +5,7 @@ from tqdm import tqdm
 from db_connector import DBConnector
 from weather_api import get_air_pollution_data 
 import sys
+from charts import plot_data
 
 
 DB_PATH="air_quality.db"
@@ -34,6 +35,7 @@ def main():
         try:
             print("Refreshing air data of cities")
             refresh_air_data(db_connector)
+            plot_data(db_connector)
             first_run = False
         except:
             traceback.print_exc()
