@@ -16,8 +16,10 @@ def refresh_air_data(db_connector: DBConnector):
     for city in tqdm(cities):
         json_data = get_air_pollution_data(city)
         if json_data:
-            db_connector.insert_data_from_json(city, json_data)
-            # print(json_data)
+            try:
+                db_connector.insert_data_from_json(city, json_data)
+            except:
+                traceback.print_exc()
         else:
             print(f"failed to get data for {city.name}", file=sys.stderr)
 
